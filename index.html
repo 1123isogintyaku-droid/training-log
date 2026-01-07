@@ -1,112 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Training Log</title>
-<style>
-body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 10px; }
-h2 { margin-top: 30px; }
-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-th, td { border: 1px solid #ccc; padding: 6px; font-size: 12px; text-align: center; }
-th { background: #f0f0f0; }
-.section { margin-bottom: 40px; }
-</style>
+  <meta charset="UTF-8">
+  <title>トレーニング履歴</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 16px; }
+    h1 { font-size: 22px; }
+    h2 { margin-top: 24px; font-size: 18px; border-bottom: 1px solid #ccc; }
+    ul { padding-left: 18px; }
+    li { margin-bottom: 6px; }
+  </style>
 </head>
 <body>
 
-<h1>トレーニング記録</h1>
+<h1>トレーニング履歴</h1>
 
-<div class="section">
-<h2>① トレーニング履歴</h2>
-<table id="logTable">
-<thead>
-<tr>
-<th>日付</th>
-<th>種目</th>
-<th>重量</th>
-<th>回数</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+<h2>3/30</h2>
+<ul>
+  <li>スクワット 12kg 10×2セット</li>
+  <li>ブルガリアン 10×2セット</li>
+  <li>プレスダウン 10kg 10→15→15回</li>
+  <li>アブドミナル 15kg 10×3セット</li>
+  <li>ダンベルサイドベント 7kg 10×3セット</li>
+  <li>フィクスドプルダウン 20kg 10×2セット（前傾姿勢10×2）</li>
+  <li>リズムスクワット 30秒×4セット</li>
+</ul>
 
-<div class="section">
-<h2>② 種目ごとの最高重量</h2>
-<table id="maxWeightTable">
-<thead>
-<tr>
-<th>種目</th>
-<th>重量</th>
-<th>回数</th>
-<th>日付</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+<h2>3/24</h2>
+<ul>
+  <li>スミススクワット 7×10 / 12×11 / 14.5×12 / 14.5×12</li>
+  <li>ラットプル 10×10 / 15×10 / 15×11 / 15×11</li>
+  <li>スミスBP 7×10 / 12 / 12 / 13</li>
+  <li>サイドレイズ 3×6 / 1.25×11 / 13</li>
+  <li>足上げ→クランチ 10→10 / 11→6</li>
+</ul>
 
-<div class="section">
-<h2>③ 重量ごとの最高回数</h2>
-<table id="repMaxTable">
-<thead>
-<tr>
-<th>種目</th>
-<th>重量</th>
-<th>最高回数</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+<h2>3/9</h2>
+<ul>
+  <li>レッグプレス 10×10 / 10×12 / 15×10 / 15×12</li>
+  <li>ラットプル 10×10 / 15×12 / 15×12 / 20×12</li>
+  <li>チェストプレス 10×12-4</li>
+  <li>リアデルトフライ 10×10 / 13 / 16</li>
+  <li>足上げ腹筋10 クランチ10</li>
+  <li>足上げ腹筋8 クランチ6</li>
+  <li>ジャンプスクワットHIIT</li>
+</ul>
 
-<script>
-const rawData = [
-  {d:"3/30", n:"スクワット", w:12, r:10},
-  {d:"3/30", n:"スクワット", w:12, r:10},
-  {d:"3/30", n:"プレスダウン", w:10, r:10},
-  {d:"3/30", n:"プレスダウン", w:15, r:10},
-  {d:"3/30", n:"プレスダウン", w:15, r:10},
-  {d:"3/30", n:"アブドミナル", w:15, r:10},
-  {d:"3/30", n:"アブドミナル", w:15, r:10},
-  {d:"3/30", n:"アブドミナル", w:15, r:10},
-  {d:"8/31", n:"ラットプルダウン", w:20, r:15},
-  {d:"10/26", n:"インクラインベンチプレス", w:17, r:12},
-  {d:"11/12", n:"ラットプルダウン", w:20, r:12}
-];
+<h2>3/2</h2>
+<ul>
+  <li>ワイドスクワット 7×10 / 12×10 / 17×10×10</li>
+  <li>フィクスドプル 10×10 / 15×10 / 20×10×10×10</li>
+  <li>ローロウ 10×10（2）/ 15×10（2）</li>
+  <li>ケーブルトライセプスEX 10×10×10 / 10×20</li>
+  <li>アウターサイ 10×10 / 20×10 / 15×15 / 15×10</li>
+  <li>インナーサイ 15×10（2）</li>
+</ul>
 
-localStorage.setItem("trainingData", JSON.stringify(rawData));
-const data = JSON.parse(localStorage.getItem("trainingData"));
+<!-- 以下、同じ形式で続く。長いのでまずここまで反映確認用 -->
 
-const logBody = document.querySelector("#logTable tbody");
-data.forEach(e=>{
-  logBody.innerHTML += `<tr><td>${e.d}</td><td>${e.n}</td><td>${e.w}</td><td>${e.r}</td></tr>`;
-});
-
-const maxMap = {};
-data.forEach(e=>{
-  if(!maxMap[e.n] || e.w > maxMap[e.n].w || (e.w===maxMap[e.n].w && e.r>maxMap[e.n].r)){
-    maxMap[e.n]=e;
-  }
-});
-const maxBody = document.querySelector("#maxWeightTable tbody");
-Object.values(maxMap).forEach(e=>{
-  maxBody.innerHTML += `<tr><td>${e.n}</td><td>${e.w}</td><td>${e.r}</td><td>${e.d}</td></tr>`;
-});
-
-const repMap = {};
-data.forEach(e=>{
-  const key = e.n+"_"+e.w;
-  if(!repMap[key] || e.r > repMap[key].r){
-    repMap[key]=e;
-  }
-});
-const repBody = document.querySelector("#repMaxTable tbody");
-Object.values(repMap).forEach(e=>{
-  repBody.innerHTML += `<tr><td>${e.n}</td><td>${e.w}</td><td>${e.r}</td></tr>`;
-});
-</script>
+<p>※ 続きは順次反映予定</p>
 
 </body>
 </html>
