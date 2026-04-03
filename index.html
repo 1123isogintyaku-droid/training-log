@@ -1,75 +1,105 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>トレーニング記録</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 16px;
-    }
-    h1 {
-      font-size: 22px;
-      margin-bottom: 16px;
-    }
-    h2 {
-      font-size: 18px;
-      margin-top: 32px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px 8px;
-      font-size: 14px;
-      vertical-align: top;
-    }
-    th {
-      background: #f2f2f2;
-      text-align: left;
-      width: 30%;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>トレーニング記録</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;margin:16px}
+h1{font-size:22px}
+h2{font-size:18px;margin-top:32px}
+summary{font-weight:600;font-size:16px;cursor:pointer;margin:6px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0 16px}
+th,td{border:1px solid #ccc;padding:6px 8px;font-size:14px}
+th{background:#f3f3f3;text-align:left}
+.best{background:#eef6ff;padding:8px;margin:6px 0 12px;font-size:14px}
+</style>
 </head>
 <body>
 
 <h1>トレーニング記録</h1>
 
-<h2>3/30</h2>
-<table>
-  <tr><th>スクワット</th><td>12kg 10×2セット</td></tr>
-  <tr><th>ブルガリアン</th><td>10×2セット</td></tr>
-  <tr><th>プレスダウン</th><td>10kg 10→15→15回</td></tr>
-  <tr><th>アブドミナル</th><td>15kg 10×3セット</td></tr>
-  <tr><th>ダンベルサイドベント</th><td>7kg 10×3セット</td></tr>
-  <tr><th>フィクスドプルダウン</th><td>20kg 10×2セット（前傾姿勢10×2）</td></tr>
-  <tr><th>リズムスクワット</th><td>30秒×4セット</td></tr>
-</table>
+<!-- ===== 日付別 ===== -->
+<h2>📅 日付別</h2>
 
-<h2>3/24</h2>
+<details open>
+<summary>3/30</summary>
 <table>
-  <tr><th>スミススクワット</th><td>7×10 / 12×11 / 14.5×12 / 14.5×12</td></tr>
-  <tr><th>ラットプル</th><td>10×10 / 15×10 / 15×11 / 15×11</td></tr>
-  <tr><th>スミスBP</th><td>7×10 / 12 / 12 / 13</td></tr>
-  <tr><th>サイドレイズ</th><td>3×6 / 1.25×11 / 13</td></tr>
-  <tr><th>足上げ→クランチ</th><td>10→10 / 11→6</td></tr>
+<tr><th>スクワット</th><td>12kg×10 / 12kg×10</td></tr>
+<tr><th>ブルガリアン</th><td>自重×10 / 自重×10</td></tr>
+<tr><th>プレスダウン</th><td>10kg×10 / 10kg×15 / 10kg×15</td></tr>
+<tr><th>アブドミナル</th><td>15kg×10 / 15kg×10 / 15kg×10</td></tr>
+<tr><th>サイドベント</th><td>7kg×10 / 7kg×10 / 7kg×10</td></tr>
+<tr><th>フィクスドプル</th><td>20kg×10 / 20kg×10 / 20kg×10 / 20kg×10</td></tr>
 </table>
+</details>
 
-<h2>3/9</h2>
+<details>
+<summary>3/24</summary>
 <table>
-  <tr><th>レッグプレス</th><td>10×10 / 10×12 / 15×10 / 15×12</td></tr>
-  <tr><th>ラットプル</th><td>10×10 / 15×12 / 15×12 / 20×12</td></tr>
-  <tr><th>チェストプレス</th><td>10×12-4</td></tr>
-  <tr><th>リアデルトフライ</th><td>10×10 / 13 / 16</td></tr>
-  <tr><th>腹筋</th><td>足上げ10→クランチ10 / 足上げ8→クランチ6</td></tr>
-  <tr><th>有酸素</th><td>ジャンプスクワットHIIT</td></tr>
+<tr><th>スミススクワット</th><td>7kg×10 / 12kg×11 / 14.5kg×12 / 14.5kg×12</td></tr>
+<tr><th>ラットプルダウン</th><td>10kg×10 / 15kg×10 / 15kg×11 / 15kg×11</td></tr>
+<tr><th>スミスBP</th><td>7kg×10 / 7kg×12 / 7kg×12 / 7kg×13</td></tr>
 </table>
+</details>
 
-<p>※ 以下の日付も同じ形式で順次追加</p>
+<!-- ===== 種目別 ===== -->
+<h2>🏋️ 種目別ログ</h2>
+
+<details>
+<summary>スクワット</summary>
+
+<div class="best">
+<b>📊 ベスト</b><br>
+最高重量：17kg ×10（10/26）<br>
+次重量ベスト：14.5kg ×12（3/24）<br>
+推定最強セット：14.5kg ×12（≈20.3kg）
+</div>
+
+<table>
+<tr><th>日付</th><th>内容</th></tr>
+<tr><td>3/30</td><td>12kg×10 / 12kg×10</td></tr>
+<tr><td>5/28</td><td>12kg×10 / 12kg×10 / 12kg×10</td></tr>
+<tr><td>8/7</td><td>12kg×10 / 12kg×10 / 12kg×10</td></tr>
+<tr><td>10/26</td><td>17kg×10 / 14.5kg×10 / 12kg×10 / 12kg×10</td></tr>
+</table>
+</details>
+
+<details>
+<summary>ラットプルダウン</summary>
+
+<div class="best">
+<b>📊 ベスト</b><br>
+最高重量：20kg ×15（8/31）<br>
+次重量ベスト：15kg ×17（8/31）<br>
+推定最強セット：15kg ×17（≈23.5kg）
+</div>
+
+<table>
+<tr><th>日付</th><th>内容</th></tr>
+<tr><td>3/9</td><td>10kg×10 / 15kg×12 / 15kg×12 / 20kg×12</td></tr>
+<tr><td>8/31</td><td>15kg×10 / 15kg×15 / 15kg×17 / 20kg×15</td></tr>
+<tr><td>11/30</td><td>10kg×10 / 15kg×12 / 20kg×5 / 15kg×12</td></tr>
+</table>
+</details>
+
+<details>
+<summary>ダンベルサイドベント</summary>
+
+<div class="best">
+<b>📊 ベスト</b><br>
+最高重量：8kg ×10（8/7）<br>
+次重量ベスト：7kg ×15（8/20）<br>
+推定最強セット：7kg ×15（≈10.5kg）
+</div>
+
+<table>
+<tr><th>日付</th><th>内容</th></tr>
+<tr><td>3/30</td><td>7kg×10 / 7kg×10 / 7kg×10</td></tr>
+<tr><td>5/8</td><td>7kg×10 / 7kg×10 / 7kg×10</td></tr>
+<tr><td>8/20</td><td>7kg×15 / 7kg×15 / 7kg×15</td></tr>
+</table>
+</details>
 
 </body>
 </html>
