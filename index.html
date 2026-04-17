@@ -3,38 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <title>トレーニングログ</title>
-<style>
-body { font-family: Arial; padding: 20px; }
-h2 { margin-top: 30px; }
-details { margin-bottom: 10px; }
-summary { font-weight: bold; cursor: pointer; }
-.section { margin-top: 40px; }
-</style>
 </head>
-
 <body>
 
 <h1>トレーニングログ</h1>
 
-<h2>日別ログ</h2>
 <div id="daily"></div>
-
-<div class="section">
-<h2>種目別まとめ</h2>
+<hr>
 <div id="summary"></div>
-</div>
 
 <script>
-const log = `
 
+// ===== ログ（ここに貼る） =====
+const log2026 = `
+ここに貼る
+`;
+
+const log2025 = `
+ここに貼る
 3/30
 スクワット　12kg 10×2セット
 ブルガリアン　10×2セット
 プレスダウン10kg 10→15→15回
 アブドミナル　15kg 10×3セット
 ダンベルサイドベント 7kg　10×3セット
-フィクスドプルダウン　20kg 10×2セット
-10×2セット（前傾姿勢）
+フィクスドプルダウン
+20kg 10×2セット　10×2セット
 リズムスクワット　30秒×4セット
 
 3/24
@@ -46,8 +40,8 @@ const log = `
 7*10*12*12*13
 サイドレイズ
 3*6　1.25*11*13
-足上げ→クランチ
-10→10　11→6
+足上げ腹筋→クランチ(スーパーセット)
+10回→10回　11回→6回
 
 3/9
 レッグプレス
@@ -55,7 +49,7 @@ const log = `
 ラットプル
 10*10　15*12　15*12　20*12
 チェストプレス
-10*12-4
+10*12　4セット
 リアデルトフライ
 10*10　10*13　10*16
 足上げ腹筋10　クランチ10
@@ -79,26 +73,26 @@ const log = `
 ラットプル　　10*11　10*11　15*15　15*15
 インクラインプレス
 7*10　12*10　14*10　14*10
-エクスターナルローテーション　1.25*15-3
+エクスターナルローテーション　1.25*15　3セット
 ダンベルキックバック
 2.5*12　2.5*15　2.5*14
 トライセプスエクステンション
 2.5*12　2.5*15　2.5*14
 プランク
-20-3
+20秒　3セット
 
 04/19
 スクワット
 7*10　12*10　12*13
 スミスインクライン
 7*10　12*10　12*13
-アップライトロウ　　6*12-2　6*13
+アップライトロウ　　6*12  2セット　6*13
 ケーブルトライセプスプレスダウン
 10*10　10*12　10*14
 ローロウ　　10*10　10*12　10*14
 ショルダープレス　　7*10　12*13　12*13
 ライイングリア
-*20　1.25*20　2.5*8
+1.25*20　1.25*20　2.5*8
 サイドレイズ　1.25*17
 
 4/17
@@ -112,7 +106,7 @@ const log = `
 自重*20　1.25*15*20
 足上げ12　クランチ12
 足上げ10　クランチ10
-テンポスクHIIT
+テンポスクワットHIIT
 5/28
 スクワット　12kg 10×3セット
 ダンベルサイドベント 7kg10×3セット
@@ -120,20 +114,20 @@ const log = `
 プレスダウン　10→15→15kg 10回
 リバースプレスダウン　15kg 10×3セット
 シーテッドロー　
-縦ハンドル　15kg 10×3セット
-上ハンドル　10kg 10×3セット
+(縦ハンドル)　15kg 10×3セット
+(上ハンドル)　10kg 10×3セット
+バイクHIIT
 レベル6  16kmキープ　30秒×6セット
 
 5/23
 ブルガリアンスクワット　自重　10×2セット
 レッグランジ　14×2セット
 リバースプレスダウン　10→15→15kg
-オーバーヘッドエクステンション　10kg
-10×3セット
+オーバーヘッドエクステンション　10kg　10×3セット
 ダンベルサイドベント 7kg10×3セット
 バランスボール腹筋　10×3セット
-ビハインド10kg  15×3セット
-バックエクステンションベンチ　10×3セット
+ビハインドネックプルダウン10kg  15×3セット
+バックエクステンション　10×3セット
 バイクトレーニング
 レベル6 16kmキープ　30秒×6セット
 
@@ -149,36 +143,31 @@ const log = `
 アブドミナル　15→20→20kg 10回
 バックエクステンションベンチ　10×2セット
 6/19
-ブルガリアンスクワット(脚)　自重×10回 3セット
-ラットプルダウン(背中)　15kg×12回 3セット
-シーテッドリアレイズ　1.25kg×15　3セット
-ケーブルプレスダウン(二の腕)
+ブルガリアンスクワット
+自重×10回 3セット
+ラットプルダウン
+15kg×12回 3セット
+シーテッドリアレイズ
+1.25kg×15　3セット
+ケーブルプレスダウン
 10kg×12回 3セット
-アウターサイ→インナーサイ(お尻、うちもも)
+アウターサイ→インナーサイ(スーパーセット)
 15kg×13→15kg×12　15kg×13→15kg×12
 10kg×15→10kg×15
 バックエクステンション　10回 3セット
-シーテッドサイドレイズ(肩横)
+シーテッドサイドレイズ
 1.25kg×15 3セット
-足上げ腹筋→クランチ(腹筋)
+足上げ腹筋→クランチ
 10回→10回 2セット
 7/6
-お尻
 ブルガリアン7kg 10×3セット
-二の腕
 キックバック　3kg 10×3セット
-腹筋
 クランチ　10×3セット
 バランスボール　10×3セット
-脇腹
 サイドベント　6kg 10×3セット
-背中
-フィクスド15kg 前後ろ10×2セットずつ
-ふくらはぎ
+フィクスド15kg　10×2セット
 カーフエクステンション15kg 10×3セット
-内もも
 インナーサイ　10kg 10×3セット
-外もも
 リンクアウターサイ　15kg 10×3セット
 8/31
 ブ ル ガ リ ア ン ス ク ワ ッ ト
@@ -197,61 +186,38 @@ const log = `
 10kg×12 3 セ ッ ト
 
 8/20
-内もも
 ワイドスクワット7→9.5→9.5kg 10回
-二の腕
 フレンチプレス3kg 10×3セット
-脇腹
 ダンベルサイドベント 7kg 15×3セット
-ふくらはぎ
 カーフエクステンション15kg 10×3セット
-背中
 ビハインド10kg  15×3セット
-腹筋
 アブドミナル　15→20→20kg 15→12→12回
-内もも
 インナーサイ15kg 10×3セット
-外もも
 アウターサイ　15kg 10×3セット
-腰
 バックエクステンション 10×3セット
 
 8/7
-お尻
 スクワット　12kg 10×3セット
-脇腹
 ダンベルサイドベント 8kg 10×3セット
-二の腕
 プレスダウン10kg 15×3セット
-腹筋
 クランチ 10×3セット
-背中
 ラットプルダウン15kg 10×3セット
 ビハインド10kg  10×3セット
-お尻
 ヒップスラスト 15kg 10×3セット
-腰
 バックエクステンション 10×3セット
-有酸素運動
 リズムスクワット　15×4セット
 9/25
-お尻
 スクワット　9.5kg 10×3セット
-腹筋
 バランスボール腹筋　10×3セット
 クランチ　10×3セット
-脇腹
 ダンベルサイドベント 6kg 10×3セット
-二の腕
 プレスダウン　10kg 10×3セット
 リバースプレスダウン　10kg 10×3セット
-お尻、腰
 バックエクステンション　10×3セット
-内もも
 インナーサイ　10kg 10×3セット
-背中
 ラットプルダウン15kg 10×3セット
-シーテッドロー　上ハンドル10kg 10×3セット
+シーテッドロー　(上ハンドル)
+10kg 10×3セット
 
 9/7
 ス ク ワ ッ ト
@@ -266,7 +232,8 @@ const log = `
 10kg×10 10kg×10 10kg×12
 ケ ー ブ ル プ ッ シ ュ ダ ウ ン
 10kg×15 3 セ ッ ト
-足 上 げ 腹 筋 10 回 ク ラ ン チ 12 回 2 セ ッ ト
+足 上 げ 腹 筋 10 回　2セット
+ク ラ ン チ 12 回 2 セ ッ ト
 10/26
 ス ク ワ ッ ト
 7kg×10 17kg×10 14.5kg×10 12kg×10 12kg×10
@@ -274,15 +241,15 @@ const log = `
 7kg×10 12kg×10 17kg×10 17kg×12 10kg×10
 ラ ッ ト プ ル ダ ウ ン
 10kg×10 15kg×10 15kg×15 15kg×15 15kg×15
-シ ー テ ッ ド ロ ウ ( プ レ ー ト ) 背 中
+シ ー テ ッ ド ロ ウ
 2.5kg×10 1.25kg×15 1.25kg×15 1.25kg×15
-プ レ ー ト リ ア レ イ ズ ( 肩 後 ろ )
+プ レ ー ト リ ア レ イ ズ
 1.25kg×15 3 セ ッ ト
 ア ウ タ ー サ イ
 20kg×15 25kg×12 30kg×12 30kg×12
-ア ウ タ ー サ イ ( 閉 じ る 時 耐 え )
+ア ウ タ ー サ イ
 20kg×12
-ロ シ ア ン ツ イ ス ト ( 腹 筋 )
+ロ シ ア ン ツ イ ス ト
 2.5kg 加 重 ×20 2.5kg×30 2.5kg×30
 
 10/13
@@ -298,30 +265,22 @@ const log = `
 20kg×12 20kg×12 20kg×15
 イ ン ナ ー サ イ
 15kg×15 15kg×13 15kg×12
-ケ ー ブ ル エ ク ス テ ン シ ョ ン → ケ ー ブ ル プ レ ス ダ ウ ン
+ケ ー ブ ル エ ク ス テ ン シ ョ ン → ケ ー ブ ル プ レ ス ダ ウ ン(スーパーセット)
 5kg×12→15kg×12 2 セ ッ ト
 ケ ー ブ ル エ ク ス テ ン シ ョ ン
 5kg×10
 
 10/3
-お尻
 ブルガリアンスクワット　2.5kg 10×3セット
-脇腹
 ダンベルサイドベント　7kg 10×3セット
-背中
 フィクスドプルダウン　15kg 10×2セット
 ビハインドプルダウン　15kg 10×2セット
 ローロウ　15kg 10×3セット
-腰
 バックエクステンション　10×3セット
-内もも
 インナーサイ　10kg 10×3セット
-外もも
 アウターサイ　15kg 10×3セット
-腹筋
 シットアップ　10×3セット
 プランク　30秒×3セット
-二の腕
 プレスダウン　10kg 10×3セット
 リバースプレスダウン　10kg 10×3セット
 11/30
@@ -331,17 +290,19 @@ const log = `
 10kg×12 3 セ ッ ト
 ヒ ッ プ ス ラ ス ト
 10kg×10 15kg×12 15kg×12
-ラ イ イ ン グ レ ッ グ カ ー ル ( 裏 も も )
+ラ イ イ ン グ レ ッ グ カ ー ル
 10kg×10 10kg×10 10kg×11
 ラ ッ ト プ ル ダ ウ ン
 10kg×10 15kg×12 20kg×5 15kg×12 15kg×12
 ロ ー ロ ウ
 5kg×12 10kg×10 5kg×15 5kg×15
-サ イ ド レ イ ズ ( 肩 )
+サ イ ド レ イ ズ 
 1kg×10 1kg×15 2kg×15
-ケ ー ブ ル ト ラ イ セ プ ス エ ク ス テ ン シ ョ ン ( 二 の 腕 )
+ケ ー ブ ル ト ラ イ セ プ ス エ ク ス テ ン シ ョ ン
 10kg×10 5kg×12 5kg×12
-足 上 げ 腹 筋 10 回 → ク ラ ン チ 10 回 → ツ イ ス ト ク ラ ン チ 20 回
+足 上 げ 腹 筋 10 回
+ク ラ ン チ 10 回
+ツ イ ス ト ク ラ ン チ 20 回
 
 11/12
 ス ク ワ ッ ト
@@ -354,7 +315,7 @@ const log = `
 15kg×15 20kg×15 25kg×15 25kg×15 15kg×15
 リ ア デ ル ト フ ラ イ
 10kg×15 3 セ ッ ト
-ダ ン ベ ル プ ル オ ー バ ー ( 背 中 )
+ダ ン ベ ル プ ル オ ー バ ー 
 3kg×10 3 セ ッ ト
 ツ イ ス ト ク ラ ン チ 30 回 → 足 上 げ 腹 筋 10 回
 ツ イ ス ト ク ラ ン チ 20 回 → 足 上 げ 腹 筋 10 回
@@ -362,7 +323,7 @@ const log = `
 11/2
 ブ ル ガ リ ア ン ス ク ワ ッ ト
 自 重 ×10 5kg×10 自 重 ×10 自 重 ×10
-ル ー マ ニ ア ン デ ッ ド リ フ ト ( も も 裏 、 お 尻 )
+ル ー マ ニ ア ン デ ッ ド リ フ ト
 6kg×10 10kg×10 10kg×12 10kg×12
 イ ン ナ ー サ イ
 15kg×10 15kg×13 15kg×13 15kg×13
@@ -372,8 +333,10 @@ const log = `
 10kg×10 10kg×10 10kg×12 10kg×12 10kg×12
 ラ ッ ト プ ル ダ ウ ン ( グ リ ッ プ 11 番 )
 10kg×10 15kg×12 20kg×6 15kg×15 15kg×15
-足 上 げ 腹 筋 12 回 12 回 10 回
-ロ シ ア ン ツ イ ス ト ( 横 腹 ) 20 回 2 セ ッ ト
+足 上 げ 腹 筋 
+12 回 12 回 10 回
+ロ シ ア ン ツ イ ス ト 
+20 回 2 セ ッ ト
 12/24
 ア ウ タ ー サ イ
 15kg×10 25kg×10 25kg×12 25kg×15 25kg×15
@@ -387,7 +350,7 @@ const log = `
 10kg×10 10kg×10 10kg×12 10kg×12
 ラ ッ ト プ ル ダ ウ ン ( グ リ ッ プ 11 番 )
 15kg×10 20kg×10 15kg×12 15kg×12 15kg×12
-ケ ー ブ ル ト ラ イ セ プ ス エ ク ス テ ン シ ョ ン ( 二 の 腕 )
+ケ ー ブ ル ト ラ イ セ プ ス エ ク ス テ ン シ ョ ン
 10kg×10 5kg×10 5kg×10 5kg×10
 
 12/15
@@ -397,7 +360,7 @@ const log = `
 15kg×10 15kg×12 15kg×12 15kg×12
 ス ク ワ ッ ト
 7kg×10 12kg×12 12kg×12 12kg×12
-チ ェ ス ト サ ポ ー テ ッ ド ロ ウ ( 背 中 )
+チ ェ ス ト サ ポ ー テ ッ ド ロ ウ
 1kg×12 4 セ ッ ト
 リ ア デ ル ト フ ラ イ
 10kg×12 3 セ ッ ト
@@ -405,91 +368,243 @@ const log = `
 15kg×10 20kg×0 15kg×12 15kg×12 15kg×12
 ケ ー ブ ル プ ッ シ ュ ダ ウ ン
 10kg×12 4 セ ッ ト
-足 上 げ 腹 筋 → ク ラ ン チ
+足 上 げ 腹 筋 → ク ラ ン チ(スーパーセット)
 10 回 →10 回 2 セ ッ ト
-
 `;
 
-function parseLog(text){
-  const days = text.trim().split(/\n(?=\d+\/\d+)/);
-  return days.map(day=>{
-    const lines = day.split("\n");
-    const date = lines[0];
-    return {date, content: lines.slice(1)};
+// ===== パース =====
+function parseLog(text, year){
+  const lines = text.split("\n");
+  let result = [];
+  let current = null;
+
+  lines.forEach(line=>{
+    line = line.trim();
+    if(!line) return;
+
+    if(line.match(/^\d{1,2}\/\d{1,2}$/)){
+      current = {
+        year,
+        dateStr: line,
+        dateObj: new Date(`${year}-${line}`),
+        content:[]
+      };
+      result.push(current);
+    }else if(current){
+      current.content.push(line);
+    }
   });
+
+  return result;
 }
 
-function classifySquat(weight){
-  if(weight % 2.5 === 0) return "スクワット（フリー）";
+// ===== セット抽出 =====
+function extractSets(line){
+  const regex = /(\d+\.?\d*)kg.*?(\d+)/g;
+  let match;
+  let result = [];
+
+  while((match = regex.exec(line)) !== null){
+    result.push({
+      w: parseFloat(match[1]),
+      r: parseInt(match[2])
+    });
+  }
+
+  return result;
+}
+
+// ===== スクワット分類 =====
+function classifySquat(w){
+  if([0,2.5,5].some(x => w % 5 === x)) return "スクワット";
   return "スミススクワット";
 }
 
-function extractSets(line){
-  let results = [];
-  const match = line.match(/(\d+\.?\d*)kg.*?(\d+)/g);
-  if(match){
-    match.forEach(m=>{
-      const w = parseFloat(m.match(/(\d+\.?\d*)kg/)[1]);
-      const r = parseInt(m.match(/(\d+)$/)[1]);
-      results.push({w,r});
-    });
-  }
-  return results;
-}
-
+// ===== 部位分類 =====
 function getPart(name){
-  if(name.includes("スクワット") || name.includes("ブルガリアン") || name.includes("レッグ")) return "脚";
-  if(name.includes("ラット") || name.includes("ロウ") || name.includes("プル")) return "背中";
-  if(name.includes("プレス") && !name.includes("ショルダー")) return "胸";
-  if(name.includes("ショルダー") || name.includes("レイズ")) return "肩";
-  if(name.includes("プレスダウン") || name.includes("キックバック") || name.includes("エクステンション")) return "腕";
-  if(name.includes("腹") || name.includes("クランチ") || name.includes("アブ")) return "体幹";
+  if(name.includes("スクワット")) return "脚";
+  if(name.includes("ラット") || name.includes("ロー")) return "背中";
+  if(name.includes("プレス")) return "胸";
+  if(name.includes("サイドレイズ") || name.includes("ショルダー")) return "肩";
+  if(name.includes("カール")) return "脚";
+  if(name.includes("アブドミナル") || name.includes("腹")) return "体幹";
   return "その他";
 }
 
-const parsed = parseLog(log);
+// ===== 正規化 =====
+function normalizeExerciseName(name){
 
-const dailyDiv = document.getElementById("daily");
-const summary = {};
+  if(name.includes("シーテッド") || name.includes("ローロウ")){
+    return {main:"シーテッドロー", sub:extractVariation(name)};
+  }
 
-parsed.forEach(day=>{
-  const d = document.createElement("details");
-  const s = document.createElement("summary");
-  s.textContent = day.date;
-  d.appendChild(s);
+  if(name.includes("ラットプル")){
+    return {main:"ラットプルダウン", sub:extractVariation(name)};
+  }
 
-  day.content.forEach(line=>{
-    let name = line.split(" ")[0];
+  if(name.includes("スクワット")){
+    return {main:name.includes("スミス") ? "スミススクワット":"スクワット", sub:""};
+  }
 
-    const sets = extractSets(line);
+  return {main:name, sub:""};
+}
 
-    sets.forEach(set=>{
-      if(name.includes("スクワット")){
-        name = classifySquat(set.w);
-      }
+// ===== バリエーション =====
+function extractVariation(name){
+  if(name.includes("上")) return "上";
+  if(name.includes("下")) return "下";
+  if(name.includes("縦")) return "縦";
 
-      if(!summary[name]) summary[name] = {part:getPart(name), sets:[]};
-      summary[name].sets.push(set);
-    });
+  const m = name.match(/(\d+)番/);
+  if(m) return m[1]+"番";
 
-    const p = document.createElement("div");
-    p.textContent = line;
-    d.appendChild(p);
+  return "通常";
+}
+
+// ===== 1RM =====
+function calc1RM(w,r){
+  return Math.round(w*(1+r/30));
+}
+
+// ===== メイン処理 =====
+function init(){
+
+  let data = [
+    ...parseLog(log2026,2026),
+    ...parseLog(log2025,2025)
+  ];
+
+  data.sort((a,b)=> b.dateObj - a.dateObj);
+
+  renderDaily(data);
+  renderSummary(data);
+}
+
+// ===== 日別 =====
+function renderDaily(data){
+
+  const root = document.getElementById("daily");
+
+  const byYear = {};
+  data.forEach(d=>{
+    if(!byYear[d.year]) byYear[d.year]=[];
+    byYear[d.year].push(d);
   });
 
-  dailyDiv.appendChild(d);
-});
+  Object.keys(byYear).sort((a,b)=>b-a).forEach(year=>{
 
-const summaryDiv = document.getElementById("summary");
+    const y = document.createElement("details");
+    const ys = document.createElement("summary");
+    ys.textContent = year+"年";
+    y.appendChild(ys);
 
-Object.keys(summary).forEach(name=>{
-  const data = summary[name];
-  const max = data.sets.reduce((a,b)=> (a.w*b.r > b.w*b.r ? a : b));
+    byYear[year].forEach(day=>{
+      const d = document.createElement("details");
+      const s = document.createElement("summary");
+      s.textContent = day.dateStr;
+      d.appendChild(s);
 
-  const div = document.createElement("div");
-  div.innerHTML = `<b>${name}</b>（${data.part}） MAX: ${max.w}kg × ${max.r}`;
-  summaryDiv.appendChild(div);
-});
+      day.content.forEach(line=>{
+        const p = document.createElement("div");
+        p.textContent = line;
+        d.appendChild(p);
+      });
+
+      y.appendChild(d);
+    });
+
+    root.appendChild(y);
+  });
+}
+
+// ===== 集計 =====
+function renderSummary(data){
+
+  const summary = {};
+
+  data.forEach(day=>{
+    day.content.forEach(line=>{
+
+      const sets = extractSets(line);
+      if(sets.length===0) return;
+
+      let raw = line.split(" ")[0];
+
+      sets.forEach(set=>{
+        let name = raw;
+
+        if(name.includes("スクワット")){
+          name = classifySquat(set.w);
+        }
+
+        const norm = normalizeExerciseName(name);
+        const part = getPart(norm.main);
+
+        if(!summary[part]) summary[part]={};
+        if(!summary[part][norm.main]){
+          summary[part][norm.main]={sets:[], variations:{}};
+        }
+
+        summary[part][norm.main].sets.push(set);
+
+        if(!summary[part][norm.main].variations[norm.sub]){
+          summary[part][norm.main].variations[norm.sub]=[];
+        }
+
+        summary[part][norm.main].variations[norm.sub].push(set);
+      });
+
+    });
+  });
+
+  const root = document.getElementById("summary");
+
+  const main = document.createElement("details");
+  const ms = document.createElement("summary");
+  ms.textContent="種目別まとめ";
+  main.appendChild(ms);
+
+  Object.keys(summary).forEach(part=>{
+
+    const p = document.createElement("details");
+    const ps = document.createElement("summary");
+    ps.textContent=part;
+    p.appendChild(ps);
+
+    Object.keys(summary[part]).forEach(name=>{
+
+      const d = summary[part][name];
+
+      const max = d.sets.reduce((a,b)=> a.w>b.w?a:b);
+      const rm = d.sets.reduce((a,b)=>
+        calc1RM(a.w,a.r)>calc1RM(b.w,b.r)?a:b
+      );
+
+      const ex = document.createElement("details");
+      const es = document.createElement("summary");
+      es.textContent = `${name}（MAX:${max.w}kg / 1RM:${calc1RM(rm.w,rm.r)}kg）`;
+      ex.appendChild(es);
+
+      Object.keys(d.variations).forEach(v=>{
+        const best = d.variations[v].reduce((a,b)=> a.w>b.w?a:b);
+
+        const div = document.createElement("div");
+        div.style.marginLeft="15px";
+        div.textContent = `${v}：${best.w}kg × ${best.r}`;
+        ex.appendChild(div);
+      });
+
+      p.appendChild(ex);
+    });
+
+    main.appendChild(p);
+  });
+
+  root.appendChild(main);
+}
+
+init();
+
 </script>
 
 </body>
