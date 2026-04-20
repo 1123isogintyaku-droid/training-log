@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>トレーニングログ</title>
+<title>トレメニュー整形</title>
 
 <style>
 body{
@@ -10,11 +10,6 @@ body{
   background:#f5f7fa;
   padding:20px;
 }
-
-h1{
-  margin-bottom:10px;
-}
-
 textarea{
   width:100%;
   height:200px;
@@ -23,124 +18,147 @@ textarea{
   border:1px solid #ccc;
   margin-bottom:10px;
 }
-
 button{
-  padding:8px 16px;
+  padding:10px 20px;
   border:none;
   border-radius:10px;
   background:#4CAF50;
   color:white;
   cursor:pointer;
-  margin-right:8px;
-  margin-bottom:10px;
+  margin-right:10px;
 }
-
-.log-block{
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:15px;
-  border:1px solid #ddd;
-}
-
-.date{
-  font-weight:bold;
-  margin-bottom:8px;
-}
-
 </style>
-
 </head>
+
 <body>
 
-<h1>トレーニングログ</h1>
+<h2>トレメニュー整形</h2>
 
-<textarea id="input" placeholder="整形済みログをここに貼る"></textarea><br>
+<textarea id="input"></textarea><br>
 
-<button onclick="loadLogs()">読み込み</button>
-<button onclick="sortLogs(true)">新しい順</button>
-<button onclick="sortLogs(false)">古い順</button>
+<button onclick="convert()">整形</button>
+<button onclick="copyResult()">コピー</button>
 
-<div id="logs"></div>
+<h3>結果</h3>
+<textarea id="output" readonly></textarea>
 
 <script>
 
-let logs = [];
-
-// ===== 日付パース =====
-function parseDate(str){
-  let [m,d] = str.split("/").map(Number);
-  return new Date(2026, m-1, d);
+function normalize(line){
+  return line
+    .replace(/[＊*]/g,"×")
+    .replace(/セット|set/gi,"")
+    .replace(/　/g," ")
+    .replace(/\s+/g," ")
+    .trim();
 }
 
-// ===== 読み込み =====
-function loadLogs(){
+function expand(line){
 
-  const input = document.getElementById("input").value;
-  const lines = input.split("\n");
+  line = normalize(line);
 
-  logs = [];
-  let current = null;
+  let parts = line.split(" ");
+  let result=[];
 
-  lines.forEach(line=>{
-    line = line.trim();
-    if(!line) return;
+  parts.forEach(p=>{
 
-    // 日付
-    if(line.match(/^\d{1,2}\/\d{1,2}$/)){
-      if(current) logs.push(current);
+    if(!p) return;
 
-      current = {
-        date: line,
-        content: []
-      };
+    // ===== 回数だけ（10回とか） → 無視 =====
+    if(/^\d+回$/.test(p)) return;
+
+    // ===== 回数→回数 =====
+    if(p.includes("→") && p.includes("回")){
+      let reps = p.split("→").map(x=>parseInt(x));
+      reps.forEach(r=>{
+        result.push(`自重×${r}`);
+      });
       return;
     }
 
-    if(!current) return;
+    // ===== 自重 =====
+    if(p.includes("自重")){
+      let nums = p.match(/\d+/g);
+      if(!nums){
+        result.push("自重");
+      }else if(nums.length===2){
+        for(let i=0;i<nums[1];i++){
+          result.push(`自重×${nums[0]}`);
+        }
+      }else{
+        result.push(`自重×${nums[0]}`);
+      }
+      return;
+    }
 
-    current.content.push(line);
+    // ===== →（重量あり）=====
+    if(p.includes("→")){
+      let weight = p.match(/(\d+(\.\d+)?)(?=kg|×)/);
+      weight = weight ? weight[1] : "";
+
+      let reps = p.split("→").map(x=>parseInt(x));
+
+      reps.forEach(r=>{
+        result.push(weight?`${weight}kg×${r}`:`自重×${r}`);
+      });
+      return;
+    }
+
+    // ===== 通常パターン =====
+    let nums = p.match(/\d+(\.\d+)?/g);
+    if(!nums) return;
+
+    let w,r,s=1;
+
+    if(nums.length===3){
+      w=nums[0]; r=nums[1]; s=nums[2];
+    }else if(nums.length===2){
+      w=nums[0]; r=nums[1];
+    }else{
+      return;
+    }
+
+    for(let i=0;i<s;i++){
+      result.push(`${w}kg×${r}`);
+    }
 
   });
 
-  if(current) logs.push(current);
-
-  renderLogs();
+  return result;
 }
 
-// ===== ソート =====
-function sortLogs(desc){
+function convert(){
 
-  logs.sort((a,b)=>{
-    return desc
-      ? parseDate(b.date) - parseDate(a.date)
-      : parseDate(a.date) - parseDate(b.date);
+  let lines = document.getElementById("input").value.split("\n");
+  let out="";
+
+  lines.forEach(l=>{
+    l=l.trim();
+    if(!l) return;
+
+    // 日付
+    if(l.match(/^\d{1,2}\/\d{1,2}$/)){
+      out += "\n"+l+"\n\n";
+      return;
+    }
+
+    // セット処理
+    if(l.includes("×")||l.includes("*")||l.includes("自重")||l.includes("回")){
+      let ex = expand(l);
+      ex.forEach(x=> out+=x+"\n");
+    }else{
+      out += "\n"+l+"\n";
+    }
   });
 
-  renderLogs();
+  document.getElementById("output").value = out;
 }
 
-// ===== 描画 =====
-function renderLogs(){
-
-  const container = document.getElementById("logs");
-  container.innerHTML = "";
-
-  logs.forEach(log=>{
-
-    const div = document.createElement("div");
-    div.className = "log-block";
-
-    let html = `<div class="date">${log.date}</div>`;
-
-    log.content.forEach(line=>{
-      html += `<div>${line}</div>`;
-    });
-
-    div.innerHTML = html;
-    container.appendChild(div);
-
-  });
+function copyResult(){
+  navigator.clipboard.writeText(
+    document.getElementById("output").value
+  );
+  alert("コピーした 👍");
 }
 
 </script>
