@@ -2,157 +2,245 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>トレーニングログ</title>
+<title>トレーニング履歴</title>
+
 <style>
-body { font-family: sans-serif; padding: 20px; }
-textarea { width: 100%; height: 200px; }
-button { margin-top: 10px; }
-
-.tabs { margin-top: 20px; }
-.tab-btn {
-  padding: 8px 12px;
-  margin-right: 5px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  display: inline-block;
+body{
+  font-family:'Hiragino Maru Gothic ProN', sans-serif;
+  background:#f5f7fa;
+  padding:15px;
 }
-.tab-btn.active { background: #333; color: #fff; }
 
-.year { display: none; margin-top: 20px; }
-.year.active { display: block; }
+/* タブ */
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+.tab{
+  padding:8px 12px;
+  background:#ddd;
+  border-radius:10px;
+  cursor:pointer;
+}
+.tab.active{
+  background:#4CAF50;
+  color:white;
+}
 
-details { margin-bottom: 10px; }
-.exercise { margin-bottom: 8px; }
-.name { font-weight: bold; }
-.sets { margin-left: 10px; }
+/* 日付ブロック */
+.day{
+  background:white;
+  margin-bottom:10px;
+  border-radius:10px;
+  padding:10px;
+}
+.day-title{
+  font-weight:bold;
+  cursor:pointer;
+}
+.day-content{
+  display:none;
+  margin-top:8px;
+}
+
+/* MAX */
+.max-box{
+  background:white;
+  padding:10px;
+  border-radius:10px;
+}
+
 </style>
 </head>
+
 <body>
 
-<h2>トレーニングログ管理</h2>
+<h2>トレーニング履歴</h2>
 
-<textarea id="input" placeholder="整形済みログをここに貼る"></textarea>
-<br>
-<button onclick="loadLogs()">反映</button>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('2026')">2026年</div>
+  <div class="tab" onclick="showTab('2025')">2025年</div>
+  <div class="tab" onclick="showTab('max')">MAX</div>
+</div>
 
-<div class="tabs" id="tabs"></div>
 <div id="content"></div>
 
 <script>
-let logs = {};
 
-function loadLogs() {
-  const text = document.getElementById("input").value;
-  const lines = text.split("\n");
+// ===== 手動で登録する種目（ここ重要） =====
+const exerciseList = [
+"スクワット","ラットプルダウン","シーテッドロウ","ベンチプレス",
+"インクラインベンチプレス","サイドレイズ","ブルガリアンスクワット"
+];
 
-  logs = {};
-  let currentDate = null;
-  let currentExercise = null;
-  let currentYear = "2026";
+// ===== ログ（ここに貼る） =====
+const logs = {
 
-  lines.forEach(line => {
-    line = line.trim();
-    if (!line) return;
+"2026": `
+3/30
+スクワット
+7kg×10
+7kg×10
+7kg×10
+ラットプルダウン
+15kg×10
+15kg×10
 
-    // 日付
-    if (line.match(/^\d{4}\/\d{1,2}\/\d{1,2}$/)) {
-      currentYear = line.split("/")[0];
-      currentDate = line;
-      if (!logs[currentYear]) logs[currentYear] = {};
-      logs[currentYear][currentDate] = [];
+3/24
+スクワット
+10kg×10
+10kg×12
+ラットプルダウン
+20kg×10
+20kg×10
+`,
+
+"2025": `
+12/15
+スクワット
+7kg×10
+12kg×12
+12kg×12
+`
+};
+
+// ===== 日付変換 =====
+function parseDate(str,year){
+  let [m,d]=str.split("/").map(Number);
+  return new Date(year,m-1,d);
+}
+
+// ===== 表示 =====
+function showTab(type){
+
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  event.target.classList.add("active");
+
+  const container = document.getElementById("content");
+  container.innerHTML="";
+
+  if(type==="max"){
+    renderMax(container);
+    return;
+  }
+
+  let text = logs[type];
+  let lines = text.split("\n");
+
+  let blocks=[];
+  let current=null;
+
+  lines.forEach(l=>{
+    l=l.trim();
+    if(!l) return;
+
+    if(l.match(/^\d{1,2}\/\d{1,2}$/)){
+      if(current) blocks.push(current);
+      current={date:l,content:[]};
       return;
     }
+    current.content.push(l);
+  });
+  if(current) blocks.push(current);
 
-    if (line.match(/^\d{1,2}\/\d{1,2}$/)) {
-      currentDate = line;
-      if (!logs[currentYear]) logs[currentYear] = {};
-      logs[currentYear][currentDate] = [];
-      return;
-    }
+  // ソート
+  blocks.sort((a,b)=>{
+    return parseDate(b.date,type) - parseDate(a.date,type);
+  });
 
-    // セット（整形済み前提）
-    if (line.includes("×") || line.includes("秒")) {
-      if (currentExercise) {
-        currentExercise.sets.push(line);
+  // 描画
+  blocks.forEach(b=>{
+    let div=document.createElement("div");
+    div.className="day";
+
+    let title=document.createElement("div");
+    title.className="day-title";
+    title.textContent=b.date;
+
+    let content=document.createElement("div");
+    content.className="day-content";
+
+    b.content.forEach(c=>{
+      let d=document.createElement("div");
+      d.textContent=c;
+      content.appendChild(d);
+    });
+
+    title.onclick=()=>{
+      content.style.display = content.style.display==="none"?"block":"none";
+    };
+
+    div.appendChild(title);
+    div.appendChild(content);
+    container.appendChild(div);
+  });
+
+}
+
+// ===== MAX計算 =====
+function renderMax(container){
+
+  let maxData={};
+
+  exerciseList.forEach(e=>{
+    maxData[e]={max:0,date:""};
+  });
+
+  Object.keys(logs).forEach(year=>{
+    let lines = logs[year].split("\n");
+    let currentExercise="";
+
+    lines.forEach(l=>{
+      l=l.trim();
+      if(!l) return;
+
+      if(l.match(/^\d{1,2}\/\d{1,2}$/)){
+        currentDate = l;
+        return;
       }
-    } else {
-      // 種目
-      currentExercise = { name: line, sets: [] };
-      logs[currentYear][currentDate].push(currentExercise);
-    }
-  });
 
-  render();
-}
+      if(!l.includes("×")){
+        if(exerciseList.includes(l)){
+          currentExercise = l;
+        }
+        return;
+      }
 
-function render() {
-  const tabs = document.getElementById("tabs");
-  const content = document.getElementById("content");
+      let w = l.match(/(\d+(\.\d+)?)/);
+      if(!w) return;
 
-  tabs.innerHTML = "";
-  content.innerHTML = "";
+      let weight = parseFloat(w[1]);
 
-  const years = Object.keys(logs).sort((a,b)=>b-a);
+      if(currentExercise && maxData[currentExercise]){
+        if(weight > maxData[currentExercise].max){
+          maxData[currentExercise] = {
+            max: weight,
+            date: year + "/" + currentDate
+          };
+        }
+      }
 
-  years.forEach((year, i) => {
-    const btn = document.createElement("div");
-    btn.className = "tab-btn" + (i===0 ? " active":"");
-    btn.textContent = year;
-    btn.onclick = () => switchTab(year);
-    tabs.appendChild(btn);
-
-    const div = document.createElement("div");
-    div.className = "year" + (i===0 ? " active":"");
-    div.id = "year-" + year;
-
-    const dates = Object.keys(logs[year]).sort((a,b)=>{
-      const [am,ad] = a.split("/").slice(-2).map(Number);
-      const [bm,bd] = b.split("/").slice(-2).map(Number);
-      return (bm*100+bd)-(am*100+ad);
     });
-
-    dates.forEach(date => {
-      const details = document.createElement("details");
-      const summary = document.createElement("summary");
-      summary.textContent = date;
-      details.appendChild(summary);
-
-      logs[year][date].forEach(ex => {
-        const exDiv = document.createElement("div");
-        exDiv.className = "exercise";
-
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = ex.name;
-
-        const sets = document.createElement("div");
-        sets.className = "sets";
-
-        const clean = ex.sets.filter(s => s && s.trim() !== "");
-        sets.textContent = clean.join("　");
-
-        exDiv.appendChild(name);
-        exDiv.appendChild(sets);
-        details.appendChild(exDiv);
-      });
-
-      div.appendChild(details);
-    });
-
-    content.appendChild(div);
-  });
-}
-
-function switchTab(year) {
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".year").forEach(y=>y.classList.remove("active"));
-
-  document.querySelectorAll(".tab-btn").forEach(b=>{
-    if (b.textContent === year) b.classList.add("active");
   });
 
-  document.getElementById("year-"+year).classList.add("active");
+  let box=document.createElement("div");
+  box.className="max-box";
+
+  Object.keys(maxData).forEach(e=>{
+    if(maxData[e].max===0) return;
+
+    let div=document.createElement("div");
+    div.textContent = `${e}：${maxData[e].max}kg（${maxData[e].date}）`;
+    box.appendChild(div);
+  });
+
+  container.appendChild(box);
 }
+
+// 初期表示
+showTab("2026");
+
 </script>
 
 </body>
