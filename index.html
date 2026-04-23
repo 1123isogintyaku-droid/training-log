@@ -39,16 +39,19 @@ details {
 }
 
 .exercise {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   padding-left: 10px;
 }
 
 .name {
   font-weight: bold;
+  margin-bottom: 2px;
 }
 
 .sets {
   margin-left: 10px;
+  line-height: 1.8;
+  white-space: pre-wrap;
 }
 
 .month-group {
@@ -64,7 +67,9 @@ details {
 <div id="content"></div>
 
 <script>
+// =========================
 // 年ごとにここへ貼る
+// =========================
 const data = {
   "2026": `
 
@@ -103,10 +108,7 @@ const data = {
 20kg×10  
 
 リズムスクワット  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
+30秒|4セット
 
 
 3/24
@@ -246,7 +248,7 @@ const data = {
 自重×20秒  
 
 
-4/19
+04/19
 
 スクワット  
 7kg×10  
@@ -347,13 +349,7 @@ const data = {
 10kg×10  
 
 バイクHIIT  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-
+レベル6.16km/hキープ30秒|6セット
 
 5/23
 
@@ -396,12 +392,7 @@ const data = {
 自重×10  
 
 バイクトレーニング  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
-自重×30秒  
+レベル6.16km/hキープ30秒|6セット
 
 
 5/8
@@ -678,10 +669,7 @@ const data = {
 自重×10  
 
 リズムスクワット  
-自重×15  
-自重×15  
-自重×15  
-自重×15  
+15回|4セット
 
 9/25
 
@@ -1178,6 +1166,10 @@ const data = {
 `
 };
 
+// =========================
+// ↓ 下はいじらなくてOK
+// =========================
+
 let logs = {};
 
 function init() {
@@ -1192,13 +1184,24 @@ function init() {
       line = line.trim();
       if (!line) return;
 
+      // 日付判定
       if (line.match(/^\d{1,2}\/\d{1,2}$/)) {
         currentDate = line;
         logs[year][currentDate] = [];
         return;
       }
 
-      if (line.includes("×") || line.includes("秒")) {
+      // セット判定
+      // 通常セット：×
+      // HIITセット：｜
+      // 秒のみ表記も許可
+      const isSetLine =
+        line.includes("×") ||
+        line.includes("｜") ||
+        line.includes("秒") ||
+        line.includes("km/h");
+
+      if (isSetLine) {
         if (currentExercise) {
           currentExercise.sets.push(line);
         }
@@ -1239,7 +1242,7 @@ function render() {
     const monthMap = {};
 
     Object.keys(logs[year]).forEach(date => {
-      const [month, day] = date.split("/");
+      const [month] = date.split("/");
 
       if (!monthMap[month]) {
         monthMap[month] = [];
@@ -1282,7 +1285,10 @@ function render() {
           const sets = document.createElement("div");
           sets.className = "sets";
 
-          sets.textContent = ex.sets.join("　");
+          const cleanSets = ex.sets.filter(s => s && s.trim() !== "");
+
+          // 通常セット・HIIT両対応
+          sets.textContent = cleanSets.join("　");
 
           exDiv.appendChild(name);
           exDiv.appendChild(sets);
