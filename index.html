@@ -4,9 +4,15 @@
 <meta charset="UTF-8">
 <title>トレーニングログ</title>
 <style>
-body { font-family: sans-serif; padding: 20px; }
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
 
-.tabs { margin-bottom: 20px; }
+.tabs {
+  margin-bottom: 20px;
+}
+
 .tab-btn {
   padding: 8px 12px;
   margin-right: 5px;
@@ -14,15 +20,40 @@ body { font-family: sans-serif; padding: 20px; }
   border: 1px solid #ccc;
   display: inline-block;
 }
-.tab-btn.active { background: #333; color: #fff; }
 
-.year { display: none; }
-.year.active { display: block; }
+.tab-btn.active {
+  background: #333;
+  color: #fff;
+}
 
-details { margin-bottom: 10px; }
-.exercise { margin-bottom: 8px; }
-.name { font-weight: bold; }
-.sets { margin-left: 10px; }
+.year {
+  display: none;
+}
+
+.year.active {
+  display: block;
+}
+
+details {
+  margin-bottom: 8px;
+}
+
+.exercise {
+  margin-bottom: 8px;
+  padding-left: 10px;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.sets {
+  margin-left: 10px;
+}
+
+.month-group {
+  margin-bottom: 15px;
+}
 </style>
 </head>
 <body>
@@ -33,7 +64,7 @@ details { margin-bottom: 10px; }
 <div id="content"></div>
 
 <script>
-// 年ごとにここに貼る
+// 年ごとにここへ貼る
 const data = {
   "2026": `
 
@@ -1172,7 +1203,11 @@ function init() {
           currentExercise.sets.push(line);
         }
       } else {
-        currentExercise = { name: line, sets: [] };
+        currentExercise = {
+          name: line,
+          sets: []
+        };
+
         logs[year][currentDate].push(currentExercise);
       }
     });
@@ -1188,66 +1223,99 @@ function render() {
   tabs.innerHTML = "";
   content.innerHTML = "";
 
-  const years = Object.keys(logs).sort((a,b)=>b-a);
+  const years = Object.keys(logs).sort((a, b) => b - a);
 
   years.forEach((year, i) => {
     const btn = document.createElement("div");
-    btn.className = "tab-btn" + (i===0 ? " active":"");
+    btn.className = "tab-btn" + (i === 0 ? " active" : "");
     btn.textContent = year;
     btn.onclick = () => switchTab(year);
     tabs.appendChild(btn);
 
-    const div = document.createElement("div");
-    div.className = "year" + (i===0 ? " active":"");
-    div.id = "year-" + year;
+    const yearDiv = document.createElement("div");
+    yearDiv.className = "year" + (i === 0 ? " active" : "");
+    yearDiv.id = "year-" + year;
 
-    const dates = Object.keys(logs[year]).sort((a,b)=>{
-      const [am,ad] = a.split("/").map(Number);
-      const [bm,bd] = b.split("/").map(Number);
-      return (bm*100+bd)-(am*100+ad);
+    const monthMap = {};
+
+    Object.keys(logs[year]).forEach(date => {
+      const [month, day] = date.split("/");
+
+      if (!monthMap[month]) {
+        monthMap[month] = [];
+      }
+
+      monthMap[month].push(date);
     });
 
-    dates.forEach(date => {
-      const details = document.createElement("details");
-      const summary = document.createElement("summary");
-      summary.textContent = date;
-      details.appendChild(summary);
+    const sortedMonths = Object.keys(monthMap).sort((a, b) => b - a);
 
-      logs[year][date].forEach(ex => {
-        const exDiv = document.createElement("div");
-        exDiv.className = "exercise";
+    sortedMonths.forEach(month => {
+      const monthDetails = document.createElement("details");
+      monthDetails.className = "month-group";
 
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = ex.name;
+      const monthSummary = document.createElement("summary");
+      monthSummary.textContent = `${month}月`;
+      monthDetails.appendChild(monthSummary);
 
-        const sets = document.createElement("div");
-        sets.className = "sets";
-
-        // ★ここだけ変更（1行表示）
-        sets.textContent = ex.sets.join("　");
-
-        exDiv.appendChild(name);
-        exDiv.appendChild(sets);
-        details.appendChild(exDiv);
+      const sortedDates = monthMap[month].sort((a, b) => {
+        const da = parseInt(a.split("/")[1]);
+        const db = parseInt(b.split("/")[1]);
+        return db - da;
       });
 
-      div.appendChild(details);
+      sortedDates.forEach(date => {
+        const dateDetails = document.createElement("details");
+
+        const dateSummary = document.createElement("summary");
+        dateSummary.textContent = date;
+        dateDetails.appendChild(dateSummary);
+
+        logs[year][date].forEach(ex => {
+          const exDiv = document.createElement("div");
+          exDiv.className = "exercise";
+
+          const name = document.createElement("div");
+          name.className = "name";
+          name.textContent = ex.name;
+
+          const sets = document.createElement("div");
+          sets.className = "sets";
+
+          sets.textContent = ex.sets.join("　");
+
+          exDiv.appendChild(name);
+          exDiv.appendChild(sets);
+
+          dateDetails.appendChild(exDiv);
+        });
+
+        monthDetails.appendChild(dateDetails);
+      });
+
+      yearDiv.appendChild(monthDetails);
     });
 
-    content.appendChild(div);
+    content.appendChild(yearDiv);
   });
 }
 
 function switchTab(year) {
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".year").forEach(y=>y.classList.remove("active"));
-
-  document.querySelectorAll(".tab-btn").forEach(b=>{
-    if (b.textContent === year) b.classList.add("active");
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.classList.remove("active");
   });
 
-  document.getElementById("year-"+year).classList.add("active");
+  document.querySelectorAll(".year").forEach(div => {
+    div.classList.remove("active");
+  });
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    if (btn.textContent === year) {
+      btn.classList.add("active");
+    }
+  });
+
+  document.getElementById("year-" + year).classList.add("active");
 }
 
 init();
