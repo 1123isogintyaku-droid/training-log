@@ -126,20 +126,41 @@ body {
 }
 
 .max-category {
-  margin-bottom: 25px;
+  margin-bottom: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.max-category h3 {
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
+.max-header {
+  padding: 12px 14px;
+  cursor: pointer;
+  background: white;
+  font-weight: bold;
+  user-select: none;
+}
+
+.max-header:hover {
+  background: #fafafa;
+}
+
+.max-body {
+  display: none;
+  padding: 12px 14px;
+  border-top: 1px solid #eee;
+}
+
+.max-category.open .max-body {
+  display: block;
 }
 
 .max-item {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .max-name {
   font-weight: bold;
+  margin-bottom: 4px;
 }
 
 .max-detail {
@@ -157,7 +178,7 @@ body {
 
 <script>
 // =========================
-// MAX管理対象（先に書く）
+// MAX管理対象
 // =========================
 const trackedExercises = {
   "脚": [
@@ -196,7 +217,7 @@ const trackedExercises = {
 };
 
 // =========================
-// 年ごとログ入力
+// ログ入力
 // =========================
 const data = {
   "2026": `
@@ -436,6 +457,18 @@ const data = {
 自重×20  
 1.25kg×15  
 1.25kg×20  
+
+足上げ腹筋
+12回
+
+クランチ
+12回
+
+足上げ腹筋
+10回
+
+クランチ
+10回
 
 テンポスクワットHIIT  
 
@@ -1304,9 +1337,11 @@ function init() {
 }
 
 function parseLogs() {
+
   Object.keys(data).forEach(year => {
 
     logs[year] = {};
+
     const lines = data[year].split("\n");
 
     let currentDate = null;
@@ -1315,9 +1350,11 @@ function parseLogs() {
     lines.forEach(line => {
 
       line = line.trim();
+
       if (!line) return;
 
       if (line.match(/^\d{1,2}\/\d{1,2}$/)) {
+
         currentDate = line;
         logs[year][currentDate] = [];
         return;
@@ -1348,6 +1385,7 @@ function parseLogs() {
     });
 
   });
+
 }
 
 function calculateMax() {
@@ -1362,6 +1400,7 @@ function calculateMax() {
 
       let maxWeight = null;
       let maxDate = "";
+
       let latestWeight = null;
       let latestDate = "";
 
@@ -1408,6 +1447,7 @@ function calculateMax() {
     });
 
   });
+
 }
 
 function render() {
@@ -1453,6 +1493,11 @@ function renderYearPage(year, container) {
     dates.map(date => date.split("/")[0])
   )].sort((a,b)=>a-b);
 
+  if (months.length === 0) {
+    container.innerHTML = "ログなし";
+    return;
+  }
+
   let currentMonth = months[months.length - 1];
 
   const controls = document.createElement("div");
@@ -1462,12 +1507,15 @@ function renderYearPage(year, container) {
   monthSelect.className = "calendar-select";
 
   months.forEach(month => {
+
     const option = document.createElement("option");
     option.value = month;
     option.textContent = `${month}月`;
+
     if (month === currentMonth) {
       option.selected = true;
     }
+
     monthSelect.appendChild(option);
   });
 
@@ -1491,10 +1539,13 @@ function renderYearPage(year, container) {
     grid.className = "calendar-grid";
 
     headers.forEach(h => {
+
       const header = document.createElement("div");
       header.className = "calendar-header";
       header.textContent = h;
+
       grid.appendChild(header);
+
     });
 
     const yearNum = parseInt(year);
@@ -1504,8 +1555,10 @@ function renderYearPage(year, container) {
     const lastDate = new Date(yearNum, monthNum, 0).getDate();
 
     for (let i = 0; i < firstDay; i++) {
+
       const empty = document.createElement("div");
       empty.className = "calendar-day empty";
+
       grid.appendChild(empty);
     }
 
@@ -1526,12 +1579,13 @@ function renderYearPage(year, container) {
 
         const dot = document.createElement("div");
         dot.className = "training-dot";
+
         cell.appendChild(dot);
 
         cell.onclick = () => {
 
-          document.querySelectorAll(".calendar-day").forEach(d => {
-            d.classList.remove("active");
+          document.querySelectorAll(".calendar-day").forEach(el => {
+            el.classList.remove("active");
           });
 
           cell.classList.add("active");
@@ -1540,7 +1594,8 @@ function renderYearPage(year, container) {
         };
 
       } else {
-        cell.style.opacity = "0.6";
+
+        cell.style.opacity = "0.5";
       }
 
       grid.appendChild(cell);
@@ -1561,8 +1616,8 @@ function renderYearPage(year, container) {
 
     logs[year][dateKey].forEach(ex => {
 
-      const exDiv = document.createElement("div");
-      exDiv.className = "exercise";
+      const wrap = document.createElement("div");
+      wrap.className = "exercise";
 
       const name = document.createElement("div");
       name.className = "name";
@@ -1572,20 +1627,24 @@ function renderYearPage(year, container) {
       sets.className = "sets";
       sets.textContent = ex.sets.join("　");
 
-      exDiv.appendChild(name);
-      exDiv.appendChild(sets);
+      wrap.appendChild(name);
+      wrap.appendChild(sets);
 
-      selectedArea.appendChild(exDiv);
+      selectedArea.appendChild(wrap);
 
     });
+
   }
 
   monthSelect.addEventListener("change", () => {
+
     drawCalendar(monthSelect.value);
     selectedArea.innerHTML = "";
+
   });
 
   drawCalendar(currentMonth);
+
 }
 
 function renderMaxPage(container) {
@@ -1595,10 +1654,35 @@ function renderMaxPage(container) {
     const section = document.createElement("div");
     section.className = "max-category";
 
-    const title = document.createElement("h3");
-    title.textContent = category;
+    const header = document.createElement("div");
+    header.className = "max-header";
+    header.textContent = `${category} ▼`;
 
-    section.appendChild(title);
+    const body = document.createElement("div");
+    body.className = "max-body";
+
+    header.onclick = () => {
+
+      const isOpen = section.classList.contains("open");
+
+      document.querySelectorAll(".max-category").forEach(el => {
+
+        el.classList.remove("open");
+
+        const h = el.querySelector(".max-header");
+
+        if (h) {
+          h.textContent = h.textContent.replace("▲", "▼");
+        }
+
+      });
+
+      if (!isOpen) {
+        section.classList.add("open");
+        header.textContent = `${category} ▲`;
+      }
+
+    };
 
     maxData[category].forEach(item => {
 
@@ -1628,13 +1712,17 @@ function renderMaxPage(container) {
       wrap.appendChild(name);
       wrap.appendChild(detail);
 
-      section.appendChild(wrap);
+      body.appendChild(wrap);
 
     });
+
+    section.appendChild(header);
+    section.appendChild(body);
 
     container.appendChild(section);
 
   });
+
 }
 
 function switchTab(name) {
@@ -1648,12 +1736,15 @@ function switchTab(name) {
   });
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
+
     if (btn.textContent === name) {
       btn.classList.add("active");
     }
+
   });
 
   document.getElementById("page-" + name).classList.add("active");
+
 }
 
 init();
