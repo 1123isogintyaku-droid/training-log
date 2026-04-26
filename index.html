@@ -19,6 +19,7 @@ body {
   cursor: pointer;
   border: 1px solid #ccc;
   display: inline-block;
+  background: white;
 }
 
 .tab-btn.active {
@@ -34,18 +35,76 @@ body {
   display: block;
 }
 
-details {
-  margin-bottom: 8px;
+.calendar-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.calendar-select {
+  padding: 6px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.calendar-header {
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+}
+
+.calendar-day {
+  border: 1px solid #ddd;
+  min-height: 70px;
+  background: white;
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+  border-radius: 6px;
+}
+
+.calendar-day.empty {
+  background: #f5f5f5;
+  cursor: default;
+}
+
+.calendar-day:hover {
+  background: #fafafa;
+}
+
+.calendar-day.active {
+  border: 2px solid #333;
+}
+
+.day-number {
+  font-size: 14px;
+}
+
+.training-dot {
+  width: 8px;
+  height: 8px;
+  background: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 6px;
+  right: 6px;
 }
 
 .exercise {
-  margin-bottom: 10px;
-  padding-left: 10px;
+  margin-bottom: 12px;
+  padding-left: 8px;
 }
 
 .name {
   font-weight: bold;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .sets {
@@ -54,7 +113,15 @@ details {
   white-space: pre-wrap;
 }
 
-.month-group {
+.selected-date-area {
+  margin-top: 25px;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
+
+.selected-title {
+  font-size: 18px;
+  font-weight: bold;
   margin-bottom: 15px;
 }
 
@@ -63,14 +130,12 @@ details {
 }
 
 .max-category h3 {
-  margin-bottom: 10px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 5px;
 }
 
 .max-item {
-  margin-bottom: 14px;
-  padding-left: 10px;
+  margin-bottom: 12px;
 }
 
 .max-name {
@@ -123,6 +188,7 @@ const trackedExercises = {
   ],
 
   "腕": [
+    "プレスダウン",
     "ケーブルプレスダウン",
     "ケーブルプッシュダウン",
     "リバースプレスダウン"
@@ -1239,6 +1305,7 @@ function init() {
 
 function parseLogs() {
   Object.keys(data).forEach(year => {
+
     logs[year] = {};
     const lines = data[year].split("\n");
 
@@ -1246,6 +1313,7 @@ function parseLogs() {
     let currentExercise = null;
 
     lines.forEach(line => {
+
       line = line.trim();
       if (!line) return;
 
@@ -1262,10 +1330,13 @@ function parseLogs() {
         line.includes("km/h");
 
       if (isSetLine) {
+
         if (currentExercise) {
           currentExercise.sets.push(line);
         }
+
       } else {
+
         currentExercise = {
           name: line,
           sets: []
@@ -1273,14 +1344,18 @@ function parseLogs() {
 
         logs[year][currentDate].push(currentExercise);
       }
+
     });
+
   });
 }
 
 function calculateMax() {
+
   maxData = {};
 
   Object.keys(trackedExercises).forEach(category => {
+
     maxData[category] = [];
 
     trackedExercises[category].forEach(targetExercise => {
@@ -1291,6 +1366,7 @@ function calculateMax() {
       let latestDate = "";
 
       Object.keys(logs).forEach(year => {
+
         Object.keys(logs[year]).forEach(date => {
 
           logs[year][date].forEach(ex => {
@@ -1312,11 +1388,13 @@ function calculateMax() {
 
               latestWeight = weight;
               latestDate = `${year}/${date}`;
+
             });
 
           });
 
         });
+
       });
 
       maxData[category].push({
@@ -1328,10 +1406,12 @@ function calculateMax() {
       });
 
     });
+
   });
 }
 
 function render() {
+
   const tabs = document.getElementById("tabs");
   const content = document.getElementById("content");
 
@@ -1360,78 +1440,152 @@ function render() {
     }
 
     content.appendChild(page);
+
   });
+
 }
 
 function renderYearPage(year, container) {
 
-  const monthMap = {};
+  const dates = Object.keys(logs[year]);
 
-  Object.keys(logs[year]).forEach(date => {
-    const [month] = date.split("/");
+  const months = [...new Set(
+    dates.map(date => date.split("/")[0])
+  )].sort((a,b)=>a-b);
 
-    if (!monthMap[month]) {
-      monthMap[month] = [];
+  let currentMonth = months[months.length - 1];
+
+  const controls = document.createElement("div");
+  controls.className = "calendar-controls";
+
+  const monthSelect = document.createElement("select");
+  monthSelect.className = "calendar-select";
+
+  months.forEach(month => {
+    const option = document.createElement("option");
+    option.value = month;
+    option.textContent = `${month}月`;
+    if (month === currentMonth) {
+      option.selected = true;
+    }
+    monthSelect.appendChild(option);
+  });
+
+  controls.appendChild(monthSelect);
+  container.appendChild(controls);
+
+  const calendarWrap = document.createElement("div");
+  container.appendChild(calendarWrap);
+
+  const selectedArea = document.createElement("div");
+  selectedArea.className = "selected-date-area";
+  container.appendChild(selectedArea);
+
+  function drawCalendar(month) {
+
+    calendarWrap.innerHTML = "";
+
+    const headers = ["日","月","火","水","木","金","土"];
+
+    const grid = document.createElement("div");
+    grid.className = "calendar-grid";
+
+    headers.forEach(h => {
+      const header = document.createElement("div");
+      header.className = "calendar-header";
+      header.textContent = h;
+      grid.appendChild(header);
+    });
+
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+
+    const firstDay = new Date(yearNum, monthNum - 1, 1).getDay();
+    const lastDate = new Date(yearNum, monthNum, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("div");
+      empty.className = "calendar-day empty";
+      grid.appendChild(empty);
     }
 
-    monthMap[month].push(date);
+    for (let day = 1; day <= lastDate; day++) {
+
+      const dateKey = `${monthNum}/${day}`;
+
+      const cell = document.createElement("div");
+      cell.className = "calendar-day";
+
+      const dayNum = document.createElement("div");
+      dayNum.className = "day-number";
+      dayNum.textContent = day;
+
+      cell.appendChild(dayNum);
+
+      if (logs[year][dateKey]) {
+
+        const dot = document.createElement("div");
+        dot.className = "training-dot";
+        cell.appendChild(dot);
+
+        cell.onclick = () => {
+
+          document.querySelectorAll(".calendar-day").forEach(d => {
+            d.classList.remove("active");
+          });
+
+          cell.classList.add("active");
+
+          showWorkout(dateKey);
+        };
+
+      } else {
+        cell.style.opacity = "0.6";
+      }
+
+      grid.appendChild(cell);
+    }
+
+    calendarWrap.appendChild(grid);
+  }
+
+  function showWorkout(dateKey) {
+
+    selectedArea.innerHTML = "";
+
+    const title = document.createElement("div");
+    title.className = "selected-title";
+    title.textContent = dateKey;
+
+    selectedArea.appendChild(title);
+
+    logs[year][dateKey].forEach(ex => {
+
+      const exDiv = document.createElement("div");
+      exDiv.className = "exercise";
+
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = ex.name;
+
+      const sets = document.createElement("div");
+      sets.className = "sets";
+      sets.textContent = ex.sets.join("　");
+
+      exDiv.appendChild(name);
+      exDiv.appendChild(sets);
+
+      selectedArea.appendChild(exDiv);
+
+    });
+  }
+
+  monthSelect.addEventListener("change", () => {
+    drawCalendar(monthSelect.value);
+    selectedArea.innerHTML = "";
   });
 
-  const sortedMonths = Object.keys(monthMap).sort((a,b)=>b-a);
-
-  sortedMonths.forEach(month => {
-
-    const monthDetails = document.createElement("details");
-    monthDetails.className = "month-group";
-
-    const monthSummary = document.createElement("summary");
-    monthSummary.textContent = `${month}月`;
-
-    monthDetails.appendChild(monthSummary);
-
-    const sortedDates = monthMap[month].sort((a,b)=>{
-      const da = parseInt(a.split("/")[1]);
-      const db = parseInt(b.split("/")[1]);
-      return db-da;
-    });
-
-    sortedDates.forEach(date => {
-
-      const dateDetails = document.createElement("details");
-
-      const dateSummary = document.createElement("summary");
-      dateSummary.textContent = date;
-
-      dateDetails.appendChild(dateSummary);
-
-      logs[year][date].forEach(ex => {
-
-        const exDiv = document.createElement("div");
-        exDiv.className = "exercise";
-
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = ex.name;
-
-        const sets = document.createElement("div");
-        sets.className = "sets";
-
-        sets.textContent = ex.sets.join("　");
-
-        exDiv.appendChild(name);
-        exDiv.appendChild(sets);
-
-        dateDetails.appendChild(exDiv);
-
-      });
-
-      monthDetails.appendChild(dateDetails);
-
-    });
-
-    container.appendChild(monthDetails);
-
-  });
+  drawCalendar(currentMonth);
 }
 
 function renderMaxPage(container) {
