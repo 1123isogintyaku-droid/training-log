@@ -23,14 +23,14 @@ body {
 
 .tab-btn.active {
   background: #333;
-  color: #fff;
+  color: white;
 }
 
-.year {
+.page {
   display: none;
 }
 
-.year.active {
+.page.active {
   display: block;
 }
 
@@ -57,6 +57,30 @@ details {
 .month-group {
   margin-bottom: 15px;
 }
+
+.max-category {
+  margin-bottom: 25px;
+}
+
+.max-category h3 {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.max-item {
+  margin-bottom: 14px;
+  padding-left: 10px;
+}
+
+.max-name {
+  font-weight: bold;
+}
+
+.max-detail {
+  margin-left: 10px;
+  line-height: 1.7;
+}
 </style>
 </head>
 <body>
@@ -68,7 +92,45 @@ details {
 
 <script>
 // =========================
-// 年ごとにここへ貼る
+// MAX管理対象（先に書く）
+// =========================
+const trackedExercises = {
+  "脚": [
+    "スクワット",
+    "ブルガリアンスクワット",
+    "ワイドスクワット",
+    "ルーマニアンデッドリフト"
+  ],
+
+  "胸": [
+    "インクラインベンチプレス",
+    "チェストプレス",
+    "スミスベンチプレス"
+  ],
+
+  "背中": [
+    "ラットプルダウン",
+    "ラットプルダウン(グリップ11番)",
+    "シーテッドロウ",
+    "シーテッドロウ(上ハンドル)",
+    "シーテッドロウ(縦ハンドル)"
+  ],
+
+  "肩": [
+    "ショルダープレス",
+    "ショルダープレスマシン",
+    "サイドレイズ"
+  ],
+
+  "腕": [
+    "ケーブルプレスダウン",
+    "ケーブルプッシュダウン",
+    "リバースプレスダウン"
+  ]
+};
+
+// =========================
+// 年ごとログ入力
 // =========================
 const data = {
   "2026": `
@@ -1166,13 +1228,16 @@ const data = {
 `
 };
 
-// =========================
-// ↓ 下はいじらなくてOK
-// =========================
-
 let logs = {};
+let maxData = {};
 
 function init() {
+  parseLogs();
+  calculateMax();
+  render();
+}
+
+function parseLogs() {
   Object.keys(data).forEach(year => {
     logs[year] = {};
     const lines = data[year].split("\n");
@@ -1184,17 +1249,12 @@ function init() {
       line = line.trim();
       if (!line) return;
 
-      // 日付判定
       if (line.match(/^\d{1,2}\/\d{1,2}$/)) {
         currentDate = line;
         logs[year][currentDate] = [];
         return;
       }
 
-      // セット判定
-      // 通常セット：×
-      // HIITセット：｜
-      // 秒のみ表記も許可
       const isSetLine =
         line.includes("×") ||
         line.includes("｜") ||
@@ -1215,8 +1275,60 @@ function init() {
       }
     });
   });
+}
 
-  render();
+function calculateMax() {
+  maxData = {};
+
+  Object.keys(trackedExercises).forEach(category => {
+    maxData[category] = [];
+
+    trackedExercises[category].forEach(targetExercise => {
+
+      let maxWeight = null;
+      let maxDate = "";
+      let latestWeight = null;
+      let latestDate = "";
+
+      Object.keys(logs).forEach(year => {
+        Object.keys(logs[year]).forEach(date => {
+
+          logs[year][date].forEach(ex => {
+
+            if (ex.name !== targetExercise) return;
+
+            ex.sets.forEach(setLine => {
+
+              const match = setLine.match(/(\d+(\.\d+)?)kg/i);
+
+              if (!match) return;
+
+              const weight = parseFloat(match[1]);
+
+              if (maxWeight === null || weight > maxWeight) {
+                maxWeight = weight;
+                maxDate = `${year}/${date}`;
+              }
+
+              latestWeight = weight;
+              latestDate = `${year}/${date}`;
+            });
+
+          });
+
+        });
+      });
+
+      maxData[category].push({
+        name: targetExercise,
+        maxWeight,
+        maxDate,
+        latestWeight,
+        latestDate
+      });
+
+    });
+  });
 }
 
 function render() {
@@ -1226,102 +1338,168 @@ function render() {
   tabs.innerHTML = "";
   content.innerHTML = "";
 
-  const years = Object.keys(logs).sort((a, b) => b - a);
+  const tabNames = [...Object.keys(logs).sort((a,b)=>b-a), "MAX重量"];
 
-  years.forEach((year, i) => {
+  tabNames.forEach((tabName, index) => {
+
     const btn = document.createElement("div");
-    btn.className = "tab-btn" + (i === 0 ? " active" : "");
-    btn.textContent = year;
-    btn.onclick = () => switchTab(year);
+    btn.className = "tab-btn" + (index === 0 ? " active" : "");
+    btn.textContent = tabName;
+    btn.onclick = () => switchTab(tabName);
+
     tabs.appendChild(btn);
 
-    const yearDiv = document.createElement("div");
-    yearDiv.className = "year" + (i === 0 ? " active" : "");
-    yearDiv.id = "year-" + year;
+    const page = document.createElement("div");
+    page.className = "page" + (index === 0 ? " active" : "");
+    page.id = "page-" + tabName;
 
-    const monthMap = {};
+    if (tabName === "MAX重量") {
+      renderMaxPage(page);
+    } else {
+      renderYearPage(tabName, page);
+    }
 
-    Object.keys(logs[year]).forEach(date => {
-      const [month] = date.split("/");
-
-      if (!monthMap[month]) {
-        monthMap[month] = [];
-      }
-
-      monthMap[month].push(date);
-    });
-
-    const sortedMonths = Object.keys(monthMap).sort((a, b) => b - a);
-
-    sortedMonths.forEach(month => {
-      const monthDetails = document.createElement("details");
-      monthDetails.className = "month-group";
-
-      const monthSummary = document.createElement("summary");
-      monthSummary.textContent = `${month}月`;
-      monthDetails.appendChild(monthSummary);
-
-      const sortedDates = monthMap[month].sort((a, b) => {
-        const da = parseInt(a.split("/")[1]);
-        const db = parseInt(b.split("/")[1]);
-        return db - da;
-      });
-
-      sortedDates.forEach(date => {
-        const dateDetails = document.createElement("details");
-
-        const dateSummary = document.createElement("summary");
-        dateSummary.textContent = date;
-        dateDetails.appendChild(dateSummary);
-
-        logs[year][date].forEach(ex => {
-          const exDiv = document.createElement("div");
-          exDiv.className = "exercise";
-
-          const name = document.createElement("div");
-          name.className = "name";
-          name.textContent = ex.name;
-
-          const sets = document.createElement("div");
-          sets.className = "sets";
-
-          const cleanSets = ex.sets.filter(s => s && s.trim() !== "");
-
-          // 通常セット・HIIT両対応
-          sets.textContent = cleanSets.join("　");
-
-          exDiv.appendChild(name);
-          exDiv.appendChild(sets);
-
-          dateDetails.appendChild(exDiv);
-        });
-
-        monthDetails.appendChild(dateDetails);
-      });
-
-      yearDiv.appendChild(monthDetails);
-    });
-
-    content.appendChild(yearDiv);
+    content.appendChild(page);
   });
 }
 
-function switchTab(year) {
+function renderYearPage(year, container) {
+
+  const monthMap = {};
+
+  Object.keys(logs[year]).forEach(date => {
+    const [month] = date.split("/");
+
+    if (!monthMap[month]) {
+      monthMap[month] = [];
+    }
+
+    monthMap[month].push(date);
+  });
+
+  const sortedMonths = Object.keys(monthMap).sort((a,b)=>b-a);
+
+  sortedMonths.forEach(month => {
+
+    const monthDetails = document.createElement("details");
+    monthDetails.className = "month-group";
+
+    const monthSummary = document.createElement("summary");
+    monthSummary.textContent = `${month}月`;
+
+    monthDetails.appendChild(monthSummary);
+
+    const sortedDates = monthMap[month].sort((a,b)=>{
+      const da = parseInt(a.split("/")[1]);
+      const db = parseInt(b.split("/")[1]);
+      return db-da;
+    });
+
+    sortedDates.forEach(date => {
+
+      const dateDetails = document.createElement("details");
+
+      const dateSummary = document.createElement("summary");
+      dateSummary.textContent = date;
+
+      dateDetails.appendChild(dateSummary);
+
+      logs[year][date].forEach(ex => {
+
+        const exDiv = document.createElement("div");
+        exDiv.className = "exercise";
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = ex.name;
+
+        const sets = document.createElement("div");
+        sets.className = "sets";
+
+        sets.textContent = ex.sets.join("　");
+
+        exDiv.appendChild(name);
+        exDiv.appendChild(sets);
+
+        dateDetails.appendChild(exDiv);
+
+      });
+
+      monthDetails.appendChild(dateDetails);
+
+    });
+
+    container.appendChild(monthDetails);
+
+  });
+}
+
+function renderMaxPage(container) {
+
+  Object.keys(maxData).forEach(category => {
+
+    const section = document.createElement("div");
+    section.className = "max-category";
+
+    const title = document.createElement("h3");
+    title.textContent = category;
+
+    section.appendChild(title);
+
+    maxData[category].forEach(item => {
+
+      const wrap = document.createElement("div");
+      wrap.className = "max-item";
+
+      const name = document.createElement("div");
+      name.className = "max-name";
+      name.textContent = item.name;
+
+      const detail = document.createElement("div");
+      detail.className = "max-detail";
+
+      const maxText = item.maxWeight !== null
+        ? `MAX：${item.maxWeight}kg（${item.maxDate}）`
+        : "MAX：記録なし";
+
+      const latestText = item.latestWeight !== null
+        ? `最新：${item.latestWeight}kg（${item.latestDate}）`
+        : "最新：記録なし";
+
+      detail.innerHTML = `
+        ${maxText}<br>
+        ${latestText}
+      `;
+
+      wrap.appendChild(name);
+      wrap.appendChild(detail);
+
+      section.appendChild(wrap);
+
+    });
+
+    container.appendChild(section);
+
+  });
+}
+
+function switchTab(name) {
+
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.remove("active");
   });
 
-  document.querySelectorAll(".year").forEach(div => {
-    div.classList.remove("active");
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
   });
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
-    if (btn.textContent === year) {
+    if (btn.textContent === name) {
       btn.classList.add("active");
     }
   });
 
-  document.getElementById("year-" + year).classList.add("active");
+  document.getElementById("page-" + name).classList.add("active");
 }
 
 init();
