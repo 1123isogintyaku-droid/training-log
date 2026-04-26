@@ -1361,10 +1361,12 @@ function parseLogs() {
       }
 
       const isSetLine =
-        line.includes("×") ||
-        line.includes("｜") ||
-        line.includes("秒") ||
-        line.includes("km/h");
+  　　　line.includes("×") ||
+  　　　line.includes("｜") ||
+  　　　line.includes("秒") ||
+  　　　line.includes("km/h") ||
+ 　　　 /^\d+回$/.test(line) ||
+  　　　/^\d+セット$/.test(line);
 
       if (isSetLine) {
 
